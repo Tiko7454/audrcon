@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Optional, final
-
+from cosine_distance import calculate_similarity
 
 list_of_valid_commands = [
     "FINISH",
@@ -53,7 +53,71 @@ class Command:
         pass
 
 
-def preprocess(text: str) -> str: ...
+class FinishCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class LoiterModeCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class LandModeCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class StabilizeModeCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class GuidedModeCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class ArmCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class DisarmCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class TakeOffCommand(Command):
+    def __init__(self):
+        super().__init__(1)
+
+
+class YawCommand(Command):
+    def __init__(self):
+        super().__init__(1)
+
+
+class GoToCommand(Command):
+    def __init__(self):
+        super().__init__(2)
+
+
+class PrintInformationCommand(Command):
+    def __init__(self):
+        super().__init__(0)
+
+
+class SetGroundSpeedCommand(Command):
+    def __init__(self):
+        super().__init__(1)
+
+
+def preprocess(text: str) -> Optional[str]
+    similarity_scores = calculate_similarity(text, list_of_valid_commands)
+    max_score = max(similarity_scores)
+    max_index = similarity_scores.index(max_score)
+    return max_index if max_score > 0.5 else None
 
 
 def get_corresponding_command(preprocessed_text: str) -> Command: ...
