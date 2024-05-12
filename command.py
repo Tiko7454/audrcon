@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Optional, final
-from cosine_distance import calculate_similarity
+from string_distance import calculate_similarity
 
 list_of_valid_commands = [
     "FINISH",
@@ -113,14 +113,38 @@ class SetGroundSpeedCommand(Command):
         super().__init__(1)
 
 
-def preprocess(text: str) -> Optional[str]
-    similarity_scores = calculate_similarity(text, list_of_valid_commands)
+def preprocess(text: str) -> Optional[str]:
+    similarity_scores = calculate_similarity(text.upper(), list_of_valid_commands)
     max_score = max(similarity_scores)
     max_index = similarity_scores.index(max_score)
-    return max_index if max_score > 0.5 else None
+    return max_index if max_score > 0.5 else raise Exception("Please try again.")
 
 
-def get_corresponding_command(preprocessed_text: str) -> Command: ...
+def get_corresponding_command(preprocessed_text: str) -> Command:
+    if preprocessed_text == list_of_valid_commands[0]: # FINISH
+        return FinishCommand()
+    if preprocessed_text == list_of_valid_commands[1]: # LOITER MODE
+        return LoiterModeCommand()
+    if preprocessed_text == list_of_valid_commands[2]: # LAND MODE
+        return LandModeCommand()
+    if preprocessed_text == list_of_valid_commands[3]: # STABILIZE MODE
+        return StabilizeModeCommand()
+    if preprocessed_text == list_of_valid_commands[4]: # GUIDED MODE
+        return GuidedModeCommand()
+    if preprocessed_text == list_of_valid_commands[5]: # ARM
+        return ArmCommand()
+    if preprocessed_text == list_of_valid_commands[6]: # DISARM
+        return DisarmCommand()
+    if preprocessed_text == list_of_valid_commands[7]: # TAKE OFF
+        return TakeOffCommand()
+    if preprocessed_text == list_of_valid_commands[8]: # YAW
+        return YawCommand()
+    if preprocessed_text == list_of_valid_commands[9]: # GOTO
+        return GoToCommand()
+    if preprocessed_text == list_of_valid_commands[10]: # PRINT INFORMATION
+        return PrintInformationCommand()
+    if preprocessed_text == list_of_valid_commands[11]: # SET GROUND SPEED
+        return SetGroundSpeedCommand()
 
 
 def transform_output(text: str) -> Command:
