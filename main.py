@@ -1,4 +1,3 @@
-from drone import Drone
 from mic import record, output_filename
 from recognize import recognize
 from command import transform_output, Command, read_number
