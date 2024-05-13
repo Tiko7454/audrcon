@@ -1,6 +1,8 @@
 from abc import abstractmethod
+from sys import argv
 from typing import Optional, final
 from string_distance import calculate_similarity
+from drone import Drone
 
 list_of_valid_commands = [
     "FINISH",
@@ -19,6 +21,7 @@ list_of_valid_commands = [
 
 
 class Command:
+    drone = Drone(argv[1])
     head_command: Optional["Command"] = None
     arguments: list[int] = []
 
@@ -57,67 +60,110 @@ class FinishCommand(Command):
     def __init__(self):
         super().__init__(0)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.finish(*cls.arguments)
 
 class LoiterModeCommand(Command):
     def __init__(self):
         super().__init__(0)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.set_mode('LOITER')
 
 class LandModeCommand(Command):
     def __init__(self):
         super().__init__(0)
+
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.set_mode('LAND')
 
 
 class StabilizeModeCommand(Command):
     def __init__(self):
         super().__init__(0)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.set_mode('STABILIZE')
+
 
 class GuidedModeCommand(Command):
     def __init__(self):
         super().__init__(0)
+
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.set_mode('GUIDED')
 
 
 class ArmCommand(Command):
     def __init__(self):
         super().__init__(0)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.arm(*cls.arguments)
 
 class DisarmCommand(Command):
     def __init__(self):
         super().__init__(0)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.disarm(*cls.arguments)
 
 class TakeOffCommand(Command):
     def __init__(self):
         super().__init__(1)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.take_off(*cls.arguments)
 
 class YawCommand(Command):
     def __init__(self):
         super().__init__(1)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.yaw(*cls.arguments)
 
 class GoToCommand(Command):
     def __init__(self):
         super().__init__(2)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.goto(*cls.arguments)
 
 class PrintInformationCommand(Command):
     def __init__(self):
         super().__init__(0)
+
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.print_information(*cls.arguments)
 
 
 class SetGroundSpeedCommand(Command):
     def __init__(self):
         super().__init__(1)
 
+    @classmethod
+    def execute(cls) -> None:
+        cls.drone.set_ground_speed(*cls.arguments)
+
 
 def preprocess(text: str) -> Optional[str]:
     similarity_scores = calculate_similarity(text.upper(), list_of_valid_commands)
     max_score = max(similarity_scores)
     max_index = similarity_scores.index(max_score)
-    return max_index if max_score > 0.5 else raise Exception("Please try again.")
+    if max_score < 0.5:
+        raise ValueError("unknown command")
+    return max_index
 
 
 def get_corresponding_command(preprocessed_text: str) -> Command:
