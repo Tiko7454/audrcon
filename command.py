@@ -2,6 +2,7 @@ from abc import abstractmethod
 from sys import argv
 from typing import Optional, final
 from string_distance import calculate_similarity
+from drone import Drone
 
 list_of_valid_commands = [
     "FINISH",
