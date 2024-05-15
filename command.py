@@ -157,13 +157,13 @@ class SetGroundSpeedCommand(Command):
         cls.drone.set_ground_speed(*cls.arguments)
 
 
-def preprocess(text: str) -> Optional[str]:
+def preprocess(text: str) -> str:
     similarity_scores = calculate_similarity(text.upper(), list_of_valid_commands)
     max_score = max(similarity_scores)
     max_index = similarity_scores.index(max_score)
     if max_score < 0.5:
         raise ValueError("unknown command")
-    return max_index
+    return list_of_valid_commands[max_index]
 
 
 def get_corresponding_command(preprocessed_text: str) -> Command:
@@ -191,6 +191,7 @@ def get_corresponding_command(preprocessed_text: str) -> Command:
         return PrintInformationCommand()
     if preprocessed_text == list_of_valid_commands[11]: # SET GROUND SPEED
         return SetGroundSpeedCommand()
+    raise ValueError("unknown command")
 
 
 def transform_output(text: str) -> Command:
