@@ -1,1 +1,5 @@
 openai-whisper
+dronekit
+python-levenshtein
+pyaudio
+pyserial
