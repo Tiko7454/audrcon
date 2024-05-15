@@ -3,6 +3,7 @@ from pymavlink import mavutil
 import time
 import math
 
+
 class Drone:
     def __init__(self, connection_string):
         self.vehicle = connect(connection_string, wait_ready=True)
@@ -57,7 +58,10 @@ class Drone:
 
         while True:
             print("Altitude: %s" % self.vehicle.location.global_relative_frame.alt)
-            if self.vehicle.location.global_relative_frame.alt >= target_altitude * 0.95:
+            if (
+                self.vehicle.location.global_relative_frame.alt
+                >= target_altitude * 0.95
+            ):
                 print("Reached target altitude")
                 self.has_taken_off = True
                 break
@@ -74,22 +78,36 @@ class Drone:
             is_relative = 0
 
         msg = self.vehicle.message_factory.command_long_encode(
-            0, 0, mavutil.mavlink.MAV_CMD_CONDITION_YAW,
-            0, degree, 0, 1, is_relative, 0, 0, 0)
+            0,
+            0,
+            mavutil.mavlink.MAV_CMD_CONDITION_YAW,
+            0,
+            degree,
+            0,
+            1,
+            is_relative,
+            0,
+            0,
+            0,
+        )
         self.vehicle.send_mavlink(msg)
         print("Drone was yawed at %s degrees" % degree)
 
     def get_location_metres(self, original_location, d_north, d_east):
         earth_radius = 6378137.0
         d_lat = d_north / earth_radius
-        d_lon = d_east / (earth_radius * math.cos(math.pi * original_location.lat / 180))
+        d_lon = d_east / (
+            earth_radius * math.cos(math.pi * original_location.lat / 180)
+        )
 
         new_lat = original_location.lat + (d_lat * 180 / math.pi)
         new_lon = original_location.lon + (d_lon * 180 / math.pi)
         if type(original_location) is LocationGlobal:
             target_location = LocationGlobal(new_lat, new_lon, original_location.alt)
         elif type(original_location) is LocationGlobalRelative:
-            target_location = LocationGlobalRelative(new_lat, new_lon, original_location.alt)
+            target_location = LocationGlobalRelative(
+                new_lat, new_lon, original_location.alt
+            )
         else:
             raise Exception("Invalid Location object passed")
 
@@ -106,8 +124,12 @@ class Drone:
         target_distance = self.get_distance_metres(current_location, target_location)
         self.vehicle.simple_goto(target_location)
 
-        while self.vehicle.mode.name == "GUIDED":  # Stop action if we are no longer in guided mode.
-            remaining_distance = self.get_distance_metres(self.vehicle.location.global_frame, target_location)
+        while (
+            self.vehicle.mode.name == "GUIDED"
+        ):  # Stop action if we are no longer in guided mode.
+            remaining_distance = self.get_distance_metres(
+                self.vehicle.location.global_frame, target_location
+            )
             print("Distance to target: %f" % remaining_distance)
             if remaining_distance <= target_distance * 0.01:
                 print("Reached target")
